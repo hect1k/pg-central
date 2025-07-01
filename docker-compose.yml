@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: central_database
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dummy
+      TZ: "Asia/Kolkata"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+    command: >
+      postgres -c listen_addresses='*'
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: email@example.com
+      PGADMIN_DEFAULT_PASSWORD: secure_password
+    ports:
+      - "8000:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  postgres_data:
+  pgadmin_data:
