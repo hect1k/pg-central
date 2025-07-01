@@ -3,28 +3,26 @@ services:
     image: postgres:15
     container_name: central_database
     restart: always
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: dummy
-      TZ: "Asia/Kolkata"
+      TZ: "${TZ}"
     ports:
-      - "5432:5432"
+      - "8000:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-scripts/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+      - ./init-scripts/pg_hba.conf:/etc/postgresql/pg_hba.conf
     command: >
-      postgres -c listen_addresses='*'
+      postgres -c listen_addresses='*' -c hba_file=/etc/postgresql/pg_hba.conf
 
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
     restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: email@example.com
-      PGADMIN_DEFAULT_PASSWORD: secure_password
+    env_file:
+      - .env
     ports:
-      - "8000:80"
+      - "8001:80"
     depends_on:
       - postgres
     volumes:
